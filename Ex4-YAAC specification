@@ -1,0 +1,214 @@
+%{
+/* This LEX program returns the tokens for the expression */
+#include “y.tab.h”
+%}
+
+%%
+“=” {printf(“\n Operator is EQUAL”);}
+“+” {printf(“\n Operator is PLUS”);}
+“-“ {printf(“\n Operator is MINUS”);}
+“/” {printf(“\n Operator is DIVISION”);}
+“*” {printf(“\n Operator is MULTIPLICATION”);}
+
+[a-z A-Z]*[0-9]* {
+printf(“\n Identifier is %s”,yytext);
+return ID;
+}
+return yytext[0]; 
+\n return 0;
+%%
+
+int yywrap()
+{
+return 1;
+}
+
+
+Program Name : arith_id.y
+
+%{
+#include
+/* This YYAC program is for recognizing the Expression */
+%}
+%%
+statement: A’=’E
+| E {
+printf(“\n Valid arithmetic expression”);
+$$ = $1;
+};
+
+E: E’+’ID
+| E’-’ID
+| E’*’ID
+| E’/’ID
+| ID
+;
+%%
+extern FILE *yyin;
+main()
+{
+do
+{
+yyparse();
+}while(!feof(yyin));
+}
+
+yyerror(char*s)
+{
+}
+
+Output:
+
+[root@localhost]# lex arith_id.1
+[root@localhost]# yacc –d arith_id.y
+[root@localhost]# gcc lex.yy.c y.tab.c
+[root@localhost]# ./a.out
+x=a+b;
+
+Identifier is x
+Operator is EQUAL
+Identifier is a
+Operator is PLUS
+Identifier is b
+
+
+b) Program to recognise a valid variable which starts with a letter 
+followed by any number of letters or digits.
+Program name: variable_test.l
+
+%{
+/* This LEX program returns the tokens for the Expression */
+#include "y.tab.h"
+%}
+%%
+"int " {return INT;}
+"float" {return FLOAT;}
+"double" {return DOUBLE;}
+[a-zA-Z]*[0-9]*{
+printf("\nIdentifier is %s",yytext);
+return ID;
+}
+return yytext[0];
+\n return 0;
+int yywrap()
+{
+return 1;
+}
+
+
+
+Program name: variable_test.y
+
+%{
+#include 
+/* This YACC program is for recognising the Expression*/
+%}
+%token ID INT FLOAT DOUBLE
+%%
+D;T L
+;
+L:L,ID
+|ID
+;
+T:INT
+|FLOAT
+|DOUBLE
+;
+%%
+extern FILE *yyin;
+main()
+{
+do 
+{
+yyparse();
+}while(!feof(yyin));
+}
+yyerror(char*s)
+{
+}
+
+Output:
+
+[root@localhost]# lex variable_test.I
+[root@localhost]# yacc –d variable_test.y
+[root@localhost]# gcc lex.yy.c y.tab.c
+[root@localhost]# ./a.out
+int a,b;
+
+Identifier is a
+Identifier is b[root@localhost]#
+
+
+
+
+
+
+
+
+
+
+
+
+
+c) Program to recognise the gramar(anb where n>=10)
+Program name: anb.l
+
+%{
+/*Lex Program for anb(n>=10)*/
+%}
+%%
+a {return A;}
+b {return B;}
+. {return yytext[10];}
+\n return('\n');
+%%
+int yywrap()
+{
+return 1;
+}
+
+Program name:anb.y
+
+%{ 
+/*YACC program for recognising anb(n>=10)*/
+%}
+%token A B
+%%
+stmt:A A A A A A A A A A anb'\n'{printf("\n Valid string");
+return 0;
+}
+;
+anb:A anb
+|A B
+;
+%%
+main()
+{ 
+printf("\nEnter some valid string\n");
+yyparse();
+}
+
+int yyerror(char*s)
+{
+printf("\nInvalid string\n");
+}
+
+
+Output:
+
+[root@localhost]# lex anb.1
+[root@localhost]# yacc -d anb.y
+[root@localhost]# gcc lex.yy.c y.tab.c
+[root@localhost]# ./a.out
+
+
+Enter some valid string
+aaaaaaaaab
+
+Invalid string
+[root@localhost]# ./a.out
+
+Enter some valid string
+aaaaaaaaaaab
+
+Valid string [root@localhost]#
